@@ -16,7 +16,7 @@ export const productPublished = async (
   logger.info(`validating product: ${product.id}`);
   if (!validProduct(product)) {
     return;
-  }
+  } 
   const variants = (product.variants ?? []).concat(product.masterVariant);
 
   await Promise.all(
