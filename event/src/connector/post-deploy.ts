@@ -14,7 +14,7 @@ async function postDeploy(properties: Map<string, unknown>): Promise<void> {
 
   assertString(topicName, CONNECT_GCP_TOPIC_NAME_KEY);
   assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
-
+  console.log(`postdeploy: topic: ${CONNECT_GCP_TOPIC_NAME_KEY} projectid: ${CONNECT_GCP_PROJECT_ID_KEY} `)
   const apiRoot = createApiRoot();
   await createZuoraSubscription(apiRoot, topicName, projectId);
 }

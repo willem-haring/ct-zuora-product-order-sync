@@ -135,7 +135,7 @@ async function createProduct(
   product: ProductProjection,
   variant: ProductVariant
 ) {
-  const description = variant.attributes.find(attr => attr.name === 'variant-description').value
+  const description = variant.attributes?.find(attr => attr.name === 'variant-description')!.value
   const name = variant.sku!.replace("-", " ")
   const productResult = await zuoraClient.createProduct({
     Description: description /* product.description?.[LOCALE] */ || '',
@@ -159,7 +159,7 @@ async function updateProduct(
   product: ProductProjection,
   variant: ProductVariant
 ) {
-  const description = variant.attributes.find(attr => attr.name === 'variant-description').value
+  const description = variant.attributes?.find(attr => attr.name === 'variant-description')!.value
   const name = variant.sku!.replace("-", " ")
   if (
     zuoraProduct?.description !== description /*product.description?.[LOCALE] */||

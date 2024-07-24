@@ -59,7 +59,7 @@ export const post = async (request: Request) => {
     );
     switch (jsonData.resource.typeId) {
       case 'product': {
-        console.log(`messagetype: ${jsonData.type}`)
+        //console.log(`messagetype: ${jsonData}`)
         const product = await getProductById(jsonData.resource.id);
         if (product) {
           logger.info('Product publishing starts: ' + product.id);
