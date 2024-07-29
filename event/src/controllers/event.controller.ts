@@ -6,7 +6,11 @@ import { productPublished } from './zuora.product.controller';
 import { customerCreated } from './zuora.account.controller';
 import { orderCreated } from './zuora.order.controller';
 import { readConfiguration } from '../utils/config.utils';
-import { getCustomerById, getOrderById, getProductById, setExternalOrderNumber } from './ct.controller';
+import { getCTCustomerById, getCTOrderById, getCTProductById, setCTExternalOrderNumber } from './ct.controller';
+
+function delay(ms: number) {
+  return new Promise( resolve => setTimeout(resolve, ms) );
+}
 
 /**
  * Exposed event POST endpoint.
@@ -29,7 +33,7 @@ export const post = async (request: Request) => {
     logger.error('Missing body message');
     throw new CustomError(400, 'Bad request: Wrong No Pub/Sub message format');
   }
-  logger.info('Message: ' + request.body.message);
+  logger.info('Message: ' + JSON.stringify(request.body.message));
 
   // Receive the Pub/Sub message
   const pubSubMessage = request.body.message;
@@ -60,7 +64,7 @@ export const post = async (request: Request) => {
     switch (jsonData.resource.typeId) {
       case 'product': {
         //console.log(`messagetype: ${jsonData}`)
-        const product = await getProductById(jsonData.resource.id);
+        const product = await getCTProductById(jsonData.resource.id);
         if (product) {
           logger.info('Product publishing starts: ' + product.id);
           await productPublished(product);
@@ -71,7 +75,7 @@ export const post = async (request: Request) => {
         if (jsonData.notificationType !== 'ResourceCreated') {
           throw new CustomError(400, 'Bad request: Unknown notification type');
         }
-        const customer = await getCustomerById(jsonData.resource.id);
+        const customer = await getCTCustomerById(jsonData.resource.id);
         if (customer) {
           logger.info('Customer starts: ' + customer.id);
           await customerCreated(customer);
@@ -82,12 +86,14 @@ export const post = async (request: Request) => {
         if (jsonData.notificationType !== 'ResourceCreated') {
           throw new CustomError(400, 'Bad request: Unknown notification type');
         }
-        const order = await getOrderById(jsonData.resource.id);
+        console.log('wait two seconds, just for testing')
+        await delay(2000)
+        const order = await getCTOrderById(jsonData.resource.id);
         if (order) {
           logger.info('Order starts: ' + order.id);
 
           const zuoraOrder = await orderCreated(order);
-          await setExternalOrderNumber(order.id, zuoraOrder.orderNumber)
+          await setCTExternalOrderNumber(order.id, zuoraOrder.orderNumber)
         }
         break;
       }
