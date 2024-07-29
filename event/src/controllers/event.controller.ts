@@ -6,7 +6,7 @@ import { productPublished } from './zuora.product.controller';
 import { customerCreated } from './zuora.account.controller';
 import { orderCreated } from './zuora.order.controller';
 import { readConfiguration } from '../utils/config.utils';
-import { getCustomerById, getOrderById, getProductById } from './ct.controller';
+import { getCustomerById, getOrderById, getProductById, setExternalOrderNumber } from './ct.controller';
 
 /**
  * Exposed event POST endpoint.
@@ -86,7 +86,8 @@ export const post = async (request: Request) => {
         if (order) {
           logger.info('Order starts: ' + order.id);
 
-          await orderCreated(order);
+          const zuoraOrder = await orderCreated(order);
+          await setExternalOrderNumber(order.id, zuoraOrder.orderNumber)
         }
         break;
       }

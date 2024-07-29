@@ -41,6 +41,36 @@ export const getOrderById = async (id: string): Promise<Order | null> => {
     return null;
   }
 };
+export const setExternalOrderNumber = async (orderid: string, externalid: string): Promise<Order | null> => {
+  try {
+    const existingorder = await createApiRoot()
+      .orders()
+      .withId({ ID: orderid })
+      .get()
+      .execute()
+      .then((result) => result.body);
+    const reworkedorder = await createApiRoot()
+      .orders()
+      .withId({ ID: orderid})
+      .post({body: 
+        {
+          actions: [
+            {
+              action: "setOrderNumber",
+              orderNumber: externalid
+            }
+          ],
+          version: existingorder.version
+        }
+      })
+      .execute()
+      return reworkedorder.body
+  } catch (error) {
+    logger.error('cannot find order by id ' + orderid);
+    return null;
+  }
+};
+
 export const getCustomerById = async (id: string): Promise<Customer | null> => {
   try {
     const customer = await createApiRoot()
